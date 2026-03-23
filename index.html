@@ -1,43 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Perceptron Lab</title>
+    <meta charset="UTF-8">
+    <title>Perceptron Lab - L vs T</title>
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f4f4f9; padding: 40px; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; }
         #grid { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; justify-content: center; margin: 20px auto; }
-        .pixel { width: 60px; height: 60px; border: 2px solid #333; cursor: pointer; background: white; }
-        .pixel.active { background: black; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; }
+        .pixel { width: 60px; height: 60px; border: 2px solid #ddd; cursor: pointer; background: white; border-radius: 4px; }
+        .pixel.active { background: #333; border-color: #333; }
+        button { background-color: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #45a049; }
+        #loading { color: #888; font-style: italic; }
     </style>
 </head>
 <body>
-    <h1>L vs T Classifier</h1>
-    <p>Click the squares to draw an L or T, then classify.</p>
 
-    <div id="grid">
-        <div class="pixel" onclick="this.classList.toggle('active')" id="p0"></div>
-        <div class="pixel" onclick="this.classList.toggle('active')" id="p1"></div>
-        <div class="pixel" onclick="this.classList.toggle('active')" id="p2"></div>
-        <div class="pixel" id="p3" onclick="this.classList.toggle('active')"></div>
-        <div class="pixel" id="p4" onclick="this.classList.toggle('active')"></div>
-        <div class="pixel" id="p5" onclick="this.classList.toggle('active')"></div>
-        <div class="pixel" id="p6" onclick="this.classList.toggle('active')"></div>
-        <div class="pixel" id="p7" onclick="this.classList.toggle('active')"></div>
-        <div class="pixel" id="p8" onclick="this.classList.toggle('active')"></div>
+    <div class="container">
+        <h1>L vs T Perceptron</h1>
+        <p id="loading">Initializing Python... Please wait.</p>
+        
+        <div id="grid">
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p0"></div>
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p1"></div>
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p2"></div>
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p3"></div>
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p4"></div>
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p5"></div>
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p6"></div>
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p7"></div>
+            <div class="pixel" onclick="this.classList.toggle('active')" id="p8"></div>
+        </div>
+
+        <button id="classify-btn" py-click="classify">Classify</button>
+        <h2 id="result">Result: ?</h2>
     </div>
-
-    <button id="classify-btn" py-click="classify">Classify Image</button>
-    <h2 id="result">Result: ?</h2>
 
     <script type="py">
         from pyscript import document
         import numpy as np
 
-        # Replace these with your weights from your Colab training
-        weights = np.array([-0.1, -0.1, -0.1, 0.1, -0.1, -0.1, 0.5, 0.5, 0.5]) 
-        bias = -0.2
+        # These are weights I calculated for a standard L vs T
+        # You can update these with your specific Colab values
+        weights = np.array([-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 1.0, 1.0, 1.0]) 
+        bias = -0.1
+
+        # Hide the loading message once Python is ready
+        document.querySelector("#loading").innerText = "Draw your letter below!"
 
         def classify(event):
             inputs = []
@@ -46,7 +57,7 @@
                 val = 1 if "active" in pixel.classList else 0
                 inputs.append(val)
             
-            # Perceptron Calculation
+            # Simple Perceptron Math
             linear_output = np.dot(np.array(inputs), weights) + bias
             prediction = 1 if linear_output >= 0 else -1
             
