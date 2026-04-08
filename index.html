@@ -38,31 +38,39 @@
         <h2 id="result">Result: ?</h2>
     </div>
 
+    <py-config>
+        packages = ["numpy"]
+    </py-config>
+
     <script type="py">
-        from pyscript import document
+        from pyscript import document, window
+        from pyodide.ffi import create_proxy
         import numpy as np
 
-        # These are weights I calculated for a standard L vs T
-        # You can update these with your specific Colab values
+        # Sample weights - keep your specific values here
         weights = np.array([-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 1.0, 1.0, 1.0]) 
         bias = -0.1
 
-        # Hide the loading message once Python is ready
+        # Clear the loading message
         document.querySelector("#loading").innerText = "Draw your letter below!"
 
         def classify(event):
             inputs = []
             for i in range(9):
                 pixel = document.querySelector(f"#p{i}")
-                val = 1 if "active" in pixel.classList else 0
+                # We check the classList for the 'active' class
+                val = 1 if "active" in pixel.classList.toString() else 0
                 inputs.append(val)
             
-            # Simple Perceptron Math
+            # Perceptron Math: y = step(w * x + b)
             linear_output = np.dot(np.array(inputs), weights) + bias
             prediction = 1 if linear_output >= 0 else -1
             
             label = "L" if prediction == 1 else "T"
             document.querySelector("#result").innerText = f"Result: {label}"
+
+        # This ensures the function is globally available for the button
+        window.classify = create_proxy(classify)
     </script>
 </body>
 </html>
