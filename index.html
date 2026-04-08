@@ -2,26 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Perceptron Lab - L vs T</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L vs T Perceptron Classifier</title>
+
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+
+    <py-config>
+        packages = ["numpy"]
+    </py-config>
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f4f4f9; padding: 40px; }
-        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; }
-        #grid { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; justify-content: center; margin: 20px auto; }
-        .pixel { width: 60px; height: 60px; border: 2px solid #ddd; cursor: pointer; background: white; border-radius: 4px; }
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background-color: #f4f4f9; padding: 40px; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-block; }
+        #grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 60px); 
+            gap: 10px; 
+            justify-content: center; 
+            margin: 20px auto;
+        }
+        .pixel { width: 60px; height: 60px; border: 2px solid #ddd; cursor: pointer; background: white; border-radius: 4px; transition: 0.2s; }
         .pixel.active { background: #333; border-color: #333; }
         button { background-color: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
         button:hover { background-color: #45a049; }
-        #loading { color: #888; font-style: italic; }
+        #loading { color: #888; font-style: italic; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>L vs T Perceptron</h1>
-        <p id="loading">Initializing Python... Please wait.</p>
-        
+        <h1>Perceptron: L or T?</h1>
+        <p id="loading">Loading Python Environment...</p>
+
         <div id="grid">
             <div class="pixel" onclick="this.classList.toggle('active')" id="p0"></div>
             <div class="pixel" onclick="this.classList.toggle('active')" id="p1"></div>
@@ -34,43 +47,11 @@
             <div class="pixel" onclick="this.classList.toggle('active')" id="p8"></div>
         </div>
 
-        <button id="classify-btn" py-click="classify">Classify</button>
+        <button id="classify-btn" py-click="classify">Classify Image</button>
         <h2 id="result">Result: ?</h2>
     </div>
 
-    <py-config>
-        packages = ["numpy"]
-    </py-config>
-
     <script type="py">
-        from pyscript import document, window
-        from pyodide.ffi import create_proxy
-        import numpy as np
-
-        # Sample weights - keep your specific values here
-        weights = np.array([-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 1.0, 1.0, 1.0]) 
-        bias = -0.1
-
-        # Clear the loading message
-        document.querySelector("#loading").innerText = "Draw your letter below!"
-
-        def classify(event):
-            inputs = []
-            for i in range(9):
-                pixel = document.querySelector(f"#p{i}")
-                # We check the classList for the 'active' class
-                val = 1 if "active" in pixel.classList.toString() else 0
-                inputs.append(val)
-            
-            # Perceptron Math: y = step(w * x + b)
-            linear_output = np.dot(np.array(inputs), weights) + bias
-            prediction = 1 if linear_output >= 0 else -1
-            
-            label = "L" if prediction == 1 else "T"
-            document.querySelector("#result").innerText = f"Result: {label}"
-
-        # This ensures the function is globally available for the button
-        window.classify = create_proxy(classify)
     </script>
 </body>
 </html>
