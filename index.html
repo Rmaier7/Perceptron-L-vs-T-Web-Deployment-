@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>L vs T Perceptron Classifier</title>
-
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 
@@ -15,25 +14,18 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; text-align: center; background-color: #f4f4f9; padding: 40px; }
         .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-block; }
-        #grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 60px); 
-            gap: 10px; 
-            justify-content: center; 
-            margin: 20px auto;
-        }
-        .pixel { width: 60px; height: 60px; border: 2px solid #ddd; cursor: pointer; background: white; border-radius: 4px; transition: 0.2s; }
+        #grid { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; justify-content: center; margin: 20px auto; }
+        .pixel { width: 60px; height: 60px; border: 2px solid #ddd; cursor: pointer; background: white; border-radius: 4px; }
         .pixel.active { background: #333; border-color: #333; }
         button { background-color: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        button:hover { background-color: #45a049; }
-        #loading { color: #888; font-style: italic; margin-bottom: 10px; }
+        #loading { color: #888; font-style: italic; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Perceptron: L or T?</h1>
-        <p id="loading">Loading Python Environment...</p>
+        <p id="loading">Initializing Python & NumPy... Please wait.</p>
 
         <div id="grid">
             <div class="pixel" onclick="this.classList.toggle('active')" id="p0"></div>
@@ -52,6 +44,35 @@
     </div>
 
     <script type="py">
+        import numpy as np
+        from pyscript import document, window
+        from pyodide.ffi import create_proxy
+
+        # Your actual trained weights from PNW Lab
+        weights = np.array([0.03009333777966039, -0.19239493777441313, -0.2149656790965556, 
+                           0.21992306847366913, -0.23925715453199323, -0.03659638861162075, 
+                           0.18361042573854824, -0.012430069698270485, 0.20015929035351676])
+        bias = 0.0
+
+        # Change loading message ONLY after NumPy is ready
+        document.querySelector("#loading").innerText = "Ready to Classify!"
+
+        def classify(event):
+            inputs = []
+            for i in range(9):
+                pixel = document.querySelector(f"#p{i}")
+                val = 1 if "active" in pixel.classList.toString() else 0
+                inputs.append(val)
+
+            # Calculation: dot product + bias
+            linear_output = np.dot(np.array(inputs), weights) + bias
+            prediction = 1 if linear_output >= 0 else -1
+
+            label = "L" if prediction == 1 else "T"
+            document.querySelector("#result").innerText = f"Result: {label}"
+
+        # Bind the Python function to the browser window
+        window.classify = create_proxy(classify)
     </script>
 </body>
 </html>
